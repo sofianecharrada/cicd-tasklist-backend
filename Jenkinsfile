@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Variables d'identification Docker Hub
         DOCKER_HUB_USER = 'sofianecharrada'
-        IMAGE_NAME      = 'tasklist-backend'
+        IMAGE_NAME      = 'tasklist-backend3'
         IMAGE_TAG       = "latest"
         
         // Identifiants Jenkins Credentials ID
