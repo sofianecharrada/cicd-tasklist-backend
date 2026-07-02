@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Variables d'identification Docker Hub
-        DOCKER_HUB_USER = 'ton-username-dockerhub'
+        DOCKER_HUB_USER = 'sofianecharrada'
         IMAGE_NAME      = 'tasklist-backend'
         IMAGE_TAG       = "latest"
         
