@@ -73,8 +73,12 @@ pipeline {
 
         stage('6. Scan de Vulnérabilités (Trivy)') {
             steps {
-                echo 'Analyse de l\'image Docker avec Trivy...'
-                bat "trivy image --severity HIGH,CRITICAL --format table ${env.DOCKER_HUB_USER}/${env.IMAGE_NAME}:${env.IMAGE_TAG} || echo Scan Trivy complété"
+                echo 'Analyse de l\'image Docker finale avec un conteneur Trivy...'
+                bat """
+                docker run --rm ^
+                  -v //./pipe/docker_engine://./pipe/docker_engine ^
+                  aquasec/trivy:latest image --severity HIGH,CRITICAL ${env.DOCKER_HUB_USER}/${env.IMAGE_NAME}:${env.IMAGE_TAG}
+                """
             }
         }
 
