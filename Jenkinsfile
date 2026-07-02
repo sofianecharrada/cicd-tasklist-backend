@@ -39,14 +39,14 @@ pipeline {
             steps {
                 withSonarQubeEnv('Sonarqube') {
                     withCredentials([string(credentialsId: env.SONAR_CREDS_ID, variable: 'SONAR_TOKEN')]) {
-                        bat '''
-                            where sonar-scanner.bat >nul 2>&1
-                            if errorlevel 1 (
-                                npm install -g sonar-scanner
-                            )
-                            if "%SONAR_HOST_URL%"=="" set "SONAR_HOST_URL=http://localhost:9000"
-                            sonar-scanner.bat -Dsonar.login=%SONAR_TOKEN% -Dsonar.host.url=%SONAR_HOST_URL% -Dsonar.projectBaseDir=%WORKSPACE%
-                        '''
+                        echo 'Lancement de l\'analyse via le conteneur officiel Sonar-Scanner...'
+                        bat """
+                        docker run --rm ^
+                          -v "%WORKSPACE%:/usr/src" ^
+                          sonarsource/sonar-scanner-cli ^
+                          -Dsonar.token=%SONAR_TOKEN% ^
+                          -Dsonar.host.url=%SONAR_HOST_URL%
+                        """
                     }
                 }
             }
