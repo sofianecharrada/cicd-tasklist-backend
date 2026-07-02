@@ -37,7 +37,7 @@ pipeline {
 
         stage('3. Analyse Qualité Code (SonarQube)') {
             steps {
-                withSonarQubeEnv('SonarQube') {
+                withSonarQubeEnv('Sonarqube') {
                     withCredentials([string(credentialsId: env.SONAR_CREDS_ID, variable: 'SONAR_TOKEN')]) {
                         bat '''
                             where sonar-scanner.bat >nul 2>&1
