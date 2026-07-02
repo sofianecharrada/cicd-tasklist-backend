@@ -39,8 +39,14 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     withCredentials([string(credentialsId: env.SONAR_CREDS_ID, variable: 'SONAR_TOKEN')]) {
-                        // Utilisation du chemin absolu/relatif du binaire Windows sans npx
-                        bat "cmd /c .\\node_modules\\sonar-scanner\\bin\\sonar-scanner.bat -Dsonar.token=%SONAR_TOKEN%"
+                        echo 'Lancement de l\'analyse via le conteneur Docker officiel Sonar-Scanner...'
+                        // Cette commande utilise Docker pour lancer l'analyse, bypassant totalement les bugs de Windows !
+                        bat """
+                        docker run --rm ^
+                        -v "%WORKSPACE%:/usr/src" ^
+                        sonarsource/sonar-scanner-cli ^
+                        -Dsonar.token=%SONAR_TOKEN%
+                        """
                     }
                 }
             }
