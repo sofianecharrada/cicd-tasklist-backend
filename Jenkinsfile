@@ -38,8 +38,8 @@ pipeline {
         stage('3. Analyse Qualité Code (SonarQube)') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    // Ajout du -y pour éviter le blocage interactif de npx sous Windows
-                    bat "npx -y sonar-scanner -Dsonar.token=${env.SONAR_CREDS_ID}"
+                    // On installe explicitement le scanner avant de l'exécuter
+                    bat "npm install -g sonar-scanner && sonar-scanner -Dsonar.token=${env.SONAR_CREDS_ID}"
                 }
             }
         }
