@@ -36,15 +36,21 @@ pipeline {
         }
 
         stage('3. Analyse Qualité Code (SonarQube)') {
-        steps {
-            withSonarQubeEnv('SonarQube') {
-                withCredentials([string(credentialsId: env.SONAR_CREDS_ID, variable: 'SONAR_TOKEN')]) {
-                    // Utilisation du chemin absolu/relatif du binaire Windows sans npx
-                    bat "cmd /c .\\node_modules\\sonar-scanner\\bin\\sonar-scanner.bat -Dsonar.token=%SONAR_TOKEN%"
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    withCredentials([string(credentialsId: env.SONAR_CREDS_ID, variable: 'SONAR_TOKEN')]) {
+                        bat '''
+                            where sonar-scanner.bat >nul 2>&1
+                            if errorlevel 1 (
+                                npm install -g sonar-scanner
+                            )
+                            if "%SONAR_HOST_URL%"=="" set "SONAR_HOST_URL=http://localhost:9000"
+                            sonar-scanner.bat -Dsonar.login=%SONAR_TOKEN% -Dsonar.host.url=%SONAR_HOST_URL% -Dsonar.projectBaseDir=%WORKSPACE%
+                        '''
+                    }
                 }
             }
         }
-    }
 
         stage('4. Génération du SBOM (Sécurité)') {
             steps {
