@@ -54,12 +54,16 @@ pipeline {
 
         stage('4. Génération du SBOM (Sécurité)') {
             steps {
-                echo 'Génération du Software Bill of Materials (SBOM) au format SPDX via Docker...'
-                // On utilise le conteneur officiel Syft pour analyser le dossier sans dépendre de Windows
+                echo 'Génération du Software Bill of Materials (SBOM) au format SPDX...'
+                // On génère le fichier dans l'espace isolé du conteneur, puis on le copie sur l'hôte
                 bat """
                 docker run --rm ^
-                  -v "%WORKSPACE%:/project" ^
-                  anchore/syft:latest dir:/project -o spdx-json=/project/sbom-spdx.json
+                  -v "%WORKSPACE%:/project_host" ^
+                  anchore/syft:latest dir:/project_host -o spdx-json=/tmp/sbom-spdx.json
+                
+                docker run --rm ^
+                  -v "%WORKSPACE%:/project_host" ^
+                  anchore/syft:latest sh -c "cp /tmp/sbom-spdx.json /project_host/sbom-spdx.json"
                 """
             }
         }
