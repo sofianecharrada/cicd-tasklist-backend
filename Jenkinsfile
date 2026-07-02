@@ -38,8 +38,8 @@ pipeline {
         stage('3. Analyse Qualité Code (SonarQube)') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    // Sous Windows, on appelle npx ou sonar-scanner.bat directement
-                    bat "npx sonar-scanner -Dsonar.token=${env.SONAR_CREDS_ID}"
+                    // Ajout du -y pour éviter le blocage interactif de npx sous Windows
+                    bat "npx -y sonar-scanner -Dsonar.token=${env.SONAR_CREDS_ID}"
                 }
             }
         }
