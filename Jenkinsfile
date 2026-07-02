@@ -54,16 +54,11 @@ pipeline {
 
         stage('4. Génération du SBOM (Sécurité)') {
             steps {
-                echo 'Génération du Software Bill of Materials (SBOM) au format SPDX...'
-                // On génère le fichier dans l'espace isolé du conteneur, puis on le copie sur l'hôte
+                echo 'Génération du SBOM directement dans le dossier du projet...'
                 bat """
                 docker run --rm ^
-                  -v "%WORKSPACE%:/project_host" ^
-                  anchore/syft:latest dir:/project_host -o spdx-json=/tmp/sbom-spdx.json
-                
-                docker run --rm ^
-                  -v "%WORKSPACE%:/project_host" ^
-                  anchore/syft:latest sh -c "cp /tmp/sbom-spdx.json /project_host/sbom-spdx.json"
+                  -v "C:\\Users\\sofiane\\Documents\\Projet Pipelines\\Projet à rendre\\cicd-tasklist-backend:/project" ^
+                  anchore/syft:latest dir:/project -o spdx-json=/project/sbom-spdx.json
                 """
             }
         }
