@@ -37,9 +37,13 @@ pipeline {
 
         stage('3. Analyse Qualité Code (SonarQube)') {
             steps {
+                // 1.withSonarQubeEnv configure automatiquement l'accès au serveur
                 withSonarQubeEnv('SonarQube') {
-                    // On appelle directement le binaire local installé dans le projet
-                    bat ".\\node_modules\\.bin\\sonar-scanner -Dsonar.token=${env.SONAR_CREDS_ID}"
+                    // 2. withCredentials va chercher le token secret de Jenkins et le met dans la variable SONAR_TOKEN
+                    withCredentials([string(credentialsId: env.SONAR_CREDS_ID, variable: 'SONAR_TOKEN')]) {
+                        // 3. On passe la variable contenant le VRAI token à l'outil
+                        bat "cmd /c npx -y sonar-scanner -Dsonar.token=%SONAR_TOKEN%"
+                    }
                 }
             }
         }
