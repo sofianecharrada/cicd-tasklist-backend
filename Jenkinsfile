@@ -8,7 +8,7 @@ pipeline {
         IMAGE_TAG       = "latest"
         
         // Identifiants Jenkins Credentials ID
-        DOCKER_CREDS_ID = 'docker-hub-credentials'
+        DOCKER_CREDS_ID = 'sam-dockerhub-password'
         SONAR_CREDS_ID  = 'sonar-token'
     }
 
@@ -37,13 +37,9 @@ pipeline {
 
         stage('3. Analyse Qualité Code (SonarQube)') {
             steps {
-                // 1.withSonarQubeEnv configure automatiquement l'accès au serveur
-                withSonarQubeEnv('SonarQube') {
-                    // 2. withCredentials va chercher le token secret de Jenkins et le met dans la variable SONAR_TOKEN
-                    withCredentials([string(credentialsId: env.SONAR_CREDS_ID, variable: 'SONAR_TOKEN')]) {
-                        // 3. On passe la variable contenant le VRAI token à l'outil
-                        bat "cmd /c npx -y sonar-scanner -Dsonar.token=%SONAR_TOKEN%"
-                    }
+                withCredentials([string(credentialsId: env.SONAR_CREDS_ID, variable: 'SONAR_TOKEN')]) {
+                    bat "cmd /c where sonar-scanner >nul 2>&1 || npm install -g sonar-scanner"
+                    bat "cmd /c sonar-scanner -Dsonar.login=%SONAR_TOKEN% -Dsonar.projectBaseDir=%WORKSPACE%"
                 }
             }
         }
