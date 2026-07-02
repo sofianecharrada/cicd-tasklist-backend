@@ -13,12 +13,14 @@ pipeline {
     stages {
         stage('1 & 2. Installation, Prisma & Tests') {
             steps {
-                echo 'Exécution de l\'installation et des tests dans un espace isolé...'
+                echo 'Exécution de l\'installation, génération Prisma et tests dans un conteneur Node (Root)...'
                 bat """
                 docker run --rm ^
-                  -v "%WORKSPACE%:/app_host" ^
+                  --user root ^
+                  -v "%WORKSPACE%:/app" ^
+                  -w /app ^
                   node:22-slim ^
-                  sh -c "mkdir -p /tmp/app && cp -r /app_host/* /tmp/app/ && cd /tmp/app && npm install && npm run prisma:generate && npm run test:coverage && mkdir -p /app_host/reports /app_host/coverage && cp -r reports/* /app_host/reports/ && cp -r coverage/* /app_host/coverage/"
+                  sh -c "npm install && npm run prisma:generate && npm run test:coverage"
                 """
             }
             post {
@@ -67,7 +69,7 @@ pipeline {
                 echo 'Analyse de l\'image avec un conteneur Trivy...'
                 bat """
                 docker run --rm ^
-                  -v //./pipe/docker_engine://./pipe/docker_engine ^
+                  -v /var/run/docker.sock:/var/run/docker.sock ^
                   aquasec/trivy:latest image --severity HIGH,CRITICAL ${env.DOCKER_HUB_USER}/${env.IMAGE_NAME}:${env.IMAGE_TAG} ^
                   || echo "Scan Trivy complété"
                 """
