@@ -9,7 +9,7 @@ pipeline {
         
         // Identifiants Jenkins Credentials ID
         DOCKER_CREDS_ID = 'sam-dockerhub-password'
-        SONAR_CREDS_ID  = 'sonar-token'
+        SONAR_CREDS_ID  = 'sam-sonar-token'
     }
 
     stages {
