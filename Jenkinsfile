@@ -86,8 +86,8 @@ pipeline {
             steps {
                 echo 'Connexion sécurisée et Push de l\'image sur Docker Hub...'
                 withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                    // Le (echo %DOCKER_PASSWORD%) sans espace bloque les caractères spéciaux et les espaces parasites sous Windows
-                    bat "(echo %DOCKER_PASSWORD%) | docker login -u %DOCKER_USERNAME% --password-stdin"
+                    // Utilisation des commutateurs directs pour Docker Login sous Windows
+                    bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
                     bat "docker push ${env.DOCKER_HUB_USER}/${env.IMAGE_NAME}:${env.IMAGE_TAG}"
                 }
             }
