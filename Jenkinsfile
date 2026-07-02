@@ -37,9 +37,11 @@ pipeline {
 
         stage('3. Analyse Qualité Code (SonarQube)') {
             steps {
-                withCredentials([string(credentialsId: env.SONAR_CREDS_ID, variable: 'SONAR_TOKEN')]) {
-                    bat "cmd /c where sonar-scanner >nul 2>&1 || npm install -g sonar-scanner"
-                    bat "cmd /c sonar-scanner -Dsonar.login=%SONAR_TOKEN% -Dsonar.projectBaseDir=%WORKSPACE%"
+                withSonarQubeEnv('SonarQube') {
+                    withCredentials([string(credentialsId: env.SONAR_CREDS_ID, variable: 'SONAR_TOKEN')]) {
+                        // Utilisation du chemin absolu/relatif du binaire Windows sans npx
+                        bat "cmd /c .\\node_modules\\sonar-scanner\\bin\\sonar-scanner.bat -Dsonar.token=%SONAR_TOKEN%"
+                    }
                 }
             }
         }
