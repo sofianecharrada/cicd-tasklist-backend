@@ -13,10 +13,10 @@ pipeline {
     stages {
         stage('1 & 2. Installation, Prisma & Tests') {
             steps {
-                echo 'Exécution de l\'installation, génération Prisma et tests dans un conteneur Node...'
-                // On utilise une image Node pour exécuter l'arborescence complète sans dépendre de Windows
+                echo 'Exécution de l\'installation, génération Prisma et tests dans un conteneur Node (Root)...'
                 bat """
                 docker run --rm ^
+                  --user root ^
                   -v "%WORKSPACE%:/app" ^
                   -w /app ^
                   node:22-slim ^
@@ -25,7 +25,6 @@ pipeline {
             }
             post {
                 always {
-                    // Jenkins récupère le rapport généré dans le Workspace partagé
                     junit allowEmptyResults: true, testResults: 'reports/junit.xml'
                 }
             }
@@ -70,7 +69,7 @@ pipeline {
                 echo 'Analyse de l\'image avec un conteneur Trivy...'
                 bat """
                 docker run --rm ^
-                  -v /var/run/docker.sock:/var/run/docker.sock ^
+                  -v //./pipe/docker_engine://./pipe/docker_engine ^
                   aquasec/trivy:latest image --severity HIGH,CRITICAL ${env.DOCKER_HUB_USER}/${env.IMAGE_NAME}:${env.IMAGE_TAG} ^
                   || echo "Scan Trivy complété"
                 """
