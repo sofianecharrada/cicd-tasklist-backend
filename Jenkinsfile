@@ -54,9 +54,13 @@ pipeline {
 
         stage('4. Génération du SBOM (Sécurité)') {
             steps {
-                echo 'Génération du Software Bill of Materials (SBOM) au format SPDX...'
-                // Gestion de l'erreur gracieuse sous Windows si Syft n'est pas présent
-                bat 'syft dir:. -o spdx-json=sbom-spdx.json || echo Syft non disponible ou en erreur'
+                echo 'Génération du Software Bill of Materials (SBOM) au format SPDX via Docker...'
+                // On utilise le conteneur officiel Syft pour analyser le dossier sans dépendre de Windows
+                bat """
+                docker run --rm ^
+                  -v "%WORKSPACE%:/project" ^
+                  anchore/syft:latest dir:/project -o spdx-json=/project/sbom-spdx.json
+                """
             }
         }
 
