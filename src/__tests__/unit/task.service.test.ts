@@ -92,11 +92,11 @@ describe("TaskService", () => {
         });
     });
 
-    describe("delete", () => {
+    describe("deleteTask", () => {
         it("should delete a task by ID", async () => {
             (mockPrisma.task.delete as any).mockResolvedValue(mockTask);
 
-            const result = await taskService.delete(1);
+            const result = await taskService.deleteTask(1);
 
             expect(result).toEqual(mockTask);
             expect(mockPrisma.task.delete).toHaveBeenCalledWith({

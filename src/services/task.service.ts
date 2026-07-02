@@ -52,3 +52,7 @@ export async function remove(id: number) {
     where: { id },
   });
 }
+
+export async function deleteTask(id: number) {
+  return remove(id);
+}
