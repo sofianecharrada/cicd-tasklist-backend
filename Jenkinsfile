@@ -84,10 +84,10 @@ pipeline {
 
         stage('7. Publication sur Docker Hub') {
             steps {
-                echo 'Connexion sécurisée à Docker Hub et Push de l\'image...'
+                echo 'Connexion sécurisée et Push de l\'image sur Docker Hub...'
                 withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                    // Syntaxe de connexion Docker adaptée pour l'invite de commandes Windows (cmd)
-                    bat "echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin"
+                    // Le (echo %DOCKER_PASSWORD%) sans espace bloque les caractères spéciaux et les espaces parasites sous Windows
+                    bat "(echo %DOCKER_PASSWORD%) | docker login -u %DOCKER_USERNAME% --password-stdin"
                     bat "docker push ${env.DOCKER_HUB_USER}/${env.IMAGE_NAME}:${env.IMAGE_TAG}"
                 }
             }
