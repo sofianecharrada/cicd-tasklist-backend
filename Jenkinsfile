@@ -8,7 +8,7 @@ pipeline {
         IMAGE_TAG       = "latest"
         
         // Identifiants Jenkins Credentials ID
-        DOCKER_CREDS_ID = 'sam-dockerhub-password'
+        DOCKER_CREDS_ID = 'c71ca4ae-d32c-4e85-8e57-fecbdcbc8644'
         SONAR_CREDS_ID  = 'sam-sonar-token'
     }
 
