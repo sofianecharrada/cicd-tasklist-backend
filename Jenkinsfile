@@ -17,10 +17,9 @@ pipeline {
                 bat """
                 docker run --rm ^
                   --user root ^
-                  -v "%WORKSPACE%:/app" ^
-                  -w /app ^
+                  -v "%WORKSPACE%:/workspace" ^
                   node:22-slim ^
-                  sh -c "npm install && npm run prisma:generate && npm run test:coverage"
+                  sh -c "mkdir -p /tmp/app && cp -r /workspace/. /tmp/app/ && cd /tmp/app && npm install && npm run prisma:generate && npm run test:coverage && mkdir -p /workspace/reports /workspace/coverage && cp -r reports/. /workspace/reports/ && cp -r coverage/. /workspace/coverage/"
                 """
             }
             post {
